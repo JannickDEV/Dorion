@@ -466,6 +466,12 @@ fn main() {
           .hidden_title(true);
       }
 
+      // WKWebView ignores data_directory, so give each non-default profile its own data store
+      #[cfg(target_os = "macos")]
+      if let Some(store_id) = profiles::macos_data_store_id() {
+        win = win.data_store_identifier(store_id);
+      }
+
       let init_script = if args::is_safemode() {
         "".to_string()
       } else {

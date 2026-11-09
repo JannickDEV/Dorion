@@ -14,7 +14,9 @@
         "updater/src/main.rs",
         ".github/workflows/fork-release.yml",
         ".github/workflows/build.yml",
-        ".github/workflows/retry-macos.yml"
+        ".github/workflows/retry-macos.yml",
+        "docs/MULTIPLE_ACCOUNTS.md",
+        "src-tauri/src/main.rs"
     ],
     "sensitivePaths": [
         "src-tauri/src/**",

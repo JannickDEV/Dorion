@@ -12,6 +12,30 @@ pub fn current_profile() -> String {
     .unwrap_or_else(|| get_config().profile.unwrap_or("default".to_string()))
 }
 
+/// On macOS, WKWebView ignores `data_directory`, so without this every profile shares one
+/// login. Non-default profiles get their own data store (macOS 14+), with an ID derived from
+/// the profile name so it stays the same across launches. The default profile keeps the
+/// standard store, so existing logins aren't lost.
+#[cfg(target_os = "macos")]
+pub fn macos_data_store_id() -> Option<[u8; 16]> {
+  let profile = current_profile();
+  if profile == "default" {
+    return None;
+  }
+
+  // Two FNV-1a 64-bit hashes with different offset bases give 16 stable bytes
+  let fnv = |offset: u64| {
+    profile.bytes().fold(offset, |hash, byte| {
+      (hash ^ u64::from(byte)).wrapping_mul(0x0100_0000_01b3)
+    })
+  };
+
+  let mut id = [0u8; 16];
+  id[..8].copy_from_slice(&fnv(0xcbf2_9ce4_8422_2325).to_be_bytes());
+  id[8..].copy_from_slice(&fnv(0x6c62_272e_07bb_0142).to_be_bytes());
+  Some(id)
+}
+
 pub fn init_profiles_folders() {
   // Create %appdata%/dorion/profiles/default
   let default_profile_folder = profiles_dir().join("default");

@@ -7,6 +7,10 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
 - **Profile launchers** (`tray.rs`, `profiles.rs`): with multi-instance on, the tray has an
   "Open profile: <name>" entry for every other profile. "Open new Window" keeps the current profile.
 - **Profile-aware cache clearing** (`cache.rs`): respects `--profile`.
+- **Separate macOS logins per profile** (`main.rs`, `profiles.rs`): WKWebView ignores `data_directory`, so non-default
+  profiles get their own `data_store_identifier` (macOS 14+, ID derived from the profile name). The default profile keeps
+  the standard store.
+- **Multi-account guide** (`docs/MULTIPLE_ACCOUNTS.md`).
 - **Updates come from this fork** (`updater/src/main.rs`, `src-tauri/src/release.rs`): the updater and the
   update check use `JannickDEV/Dorion` releases.
 - **Fork release workflow** (`.github/workflows/fork-release.yml`): after each Build on `main`, it publishes

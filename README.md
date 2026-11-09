@@ -29,7 +29,7 @@ Compared with official Dorion:
 | | Official Dorion | This build |
 |---|---|---|
 | Client mods | Shelter, Vencord, Equicord | Same, plus **Illegalcord** (curated, see below) |
-| Multiple accounts | Profiles, opened one at a time | Every profile gets its own **"Open profile: …"** entry in the tray, so you can run two or more accounts side by side |
+| Multiple accounts | Profiles, opened one at a time (all profiles share one login on macOS) | Every profile gets its own **"Open profile: …"** entry in the tray, so you can run two or more accounts side by side, with separate logins on macOS 14+ too |
 | Updates | From SpikeHD's releases | From **this fork's** releases, so updating never replaces this build with the official one |
 | Upstream changes | — | Pulled in daily, **only after a security review** (see [How updates are checked](#how-updates-are-checked)) |
 
@@ -73,12 +73,12 @@ Linux first, and the macOS files are added to the same release automatically onc
 
 ### Two accounts at once
 
-1. In Dorion's settings, under **Profiles**, create a profile, for example `second`.
-2. Turn on **multi-instance** and restart Dorion.
-3. Right-click the Dorion tray icon and choose **Open profile: second**, then sign in with your other account.
+1. **Dorion Settings:** turn on **Allow Multiple Instances**.
+2. **Profiles:** type a name such as `second` and click **Create Profile**. Don't click *Save and Restart*; that changes which
+   account opens by default.
+3. Restart Dorion, right-click the tray icon, choose **Open profile: second**, and sign in with your other account.
 
-Each profile has its own login, cache and plugin settings. You can also start a profile directly, for example from a
-desktop shortcut: `Dorion.exe --profile second` (Windows) or `dorion --profile second` (Linux).
+Each profile has its own login, cache and plugin settings. **[Full guide: desktop shortcuts, macOS, Linux, troubleshooting →](docs/MULTIPLE_ACCOUNTS.md)**
 
 If a menu entry has a slightly different name in your version, edit `config.json` directly while Dorion is
 closed. It's in `%APPDATA%\dorion\` on Windows and `~/.config/dorion/` on Linux:
