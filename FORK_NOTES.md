@@ -14,6 +14,8 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
   the Actions tab to publish the current version.
 - **Safety check** (`scripts/forkSafetyCheck.mjs`, `.github/fork-safety.json`): the scanner the daily sync
   runs on upstream changes before merging.
+- **README.md**: rewritten for people who use this build (download, setup, risks, credits). For general
+  Dorion documentation it links to upstream's README.
 
 ## Manual upstream sync
 
@@ -24,4 +26,4 @@ node scripts/forkSafetyCheck.mjs HEAD upstream/main
 git merge upstream/main
 ```
 
-When resolving conflicts in the files listed above, keep the fork's changes.
+When resolving conflicts in the files listed above (also `forkOwnedFiles` in `.github/fork-safety.json`), keep the fork's changes.

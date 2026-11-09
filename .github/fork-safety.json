@@ -2,6 +2,10 @@
     "upstream": "https://github.com/SpikeHD/Dorion.git",
     "removedPaths": [],
     "forkOwnedFiles": [
+        "README.md",
+        "FORK_NOTES.md",
+        ".github/fork-safety.json",
+        "scripts/forkSafetyCheck.mjs",
         "src-tauri/src/injection/client_mod.rs",
         "src-tauri/src/functionality/tray.rs",
         "src-tauri/src/functionality/cache.rs",

@@ -1,422 +1,146 @@
-<h1 align="center">
- <img height="100px" src="https://raw.githubusercontent.com/SpikeHD/Dorion/main/src-tauri/icons/icon.png" />
- <br />
- Dorion
-</h1>
 <div align="center">
- <img src="https://img.shields.io/github/actions/workflow/status/SpikeHD/Dorion/build.yml" />
- <img src="https://img.shields.io/github/package-json/v/SpikeHD/Dorion" />
- <img src="https://img.shields.io/github/repo-size/SpikeHD/Dorion" />
-</div>
-<div align="center">
- <img src="https://img.shields.io/github/commit-activity/m/SpikeHD/Dorion" />
- <img src="https://img.shields.io/github/release-date/SpikeHD/Dorion" />
- <img src="https://img.shields.io/github/stars/SpikeHD/Dorion" />
- <img src="https://img.shields.io/github/downloads/SpikeHD/Dorion/total" />
-</div>
-
-<div align="center">
- Dorion is an alternative Discord client aimed towards lower-spec or storage-sensitive PCs that supports themes, plugins, and more!
- <br />
- https://discord.gg/agQ9mRdHMZ
+  <img width="128" src="https://raw.githubusercontent.com/SpikeHD/Dorion/main/src-tauri/icons/icon.png" alt="Dorion icon">
+  <h1>Dorion (JannickDEV build)</h1>
+  <p><b>A custom build of <a href="https://github.com/SpikeHD/Dorion">Dorion</a>, the small and fast Discord client, with a curated <a href="https://github.com/JannickDEV/Illegalcord">Illegalcord</a> built in.</b></p>
+  <p>
+    <a href="https://github.com/JannickDEV/Dorion/releases/latest">Download</a> ·
+    <a href="#whats-different">What's different</a> ·
+    <a href="#setup">Setup</a> ·
+    <a href="#safety-and-risks">Safety and risks</a> ·
+    <a href="#credits-and-license">Credits</a>
+  </p>
 </div>
 
-# Download
+> [!IMPORTANT]
+> This is an **unofficial, personal build** I share with friends. It is not made, reviewed or supported by
+> SpikeHD (Dorion), ImHisako (Illegalcord), Equicord, Vencord or Discord. Don't report problems with it to
+> those projects. Report them [here](#reporting-problems).
 
-<table align="center">
-  <tr>
-    <th>
-      <img src="docs/image/windows.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/apple.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/debian.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/fedora.png" width="23%" align="center" />
-    </th>
-  </tr>
+> [!WARNING]
+> **Using any modified Discord client breaks Discord's [Terms of Service](https://discord.com/terms).**
+> This build removes Illegalcord's most blatant rule-breaking plugins (selfbots, Nitro snipers, mass mentions,
+> spoofing, member scanning and so on), which makes a ban much less likely. It does not make one impossible.
+> Use it at your own risk, and preferably not on an account you can't afford to lose.
 
-  <tr>
-    <td width="23%">
-      <div align="center">
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1_x64_en-US.msi">x86_64</a>
-        <span>|</span>
-        <a href="https://github.com/SpikeHD/Dorion/releases/download/v7.0.1/Dorion_7.0.1.arm64-setup.exe">ARM</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1_x64.dmg">x86_64</a>
-        <span>|</span>
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1_aarch64.dmg">ARM</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1_amd64.deb">x86_64</a>
-        <span>|</span>
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1_arm64.deb">ARM64</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1-1.x86_64.rpm">x86_64</a>
-        <span>|</span>
-        <a href="https://github.com/SpikeHD/dorion/releases/download/v7.0.1/Dorion_7.0.1-1.aarch64.rpm">ARM64</a>
-      </div>
-    </td>
-  </tr>
-</table>
+## What's different
 
-<details>
+Compared with official Dorion:
 
-<summary>View bleeding-edge builds</summary>
+| | Official Dorion | This build |
+|---|---|---|
+| Client mods | Shelter, Vencord, Equicord | Same, plus **Illegalcord** (curated, see below) |
+| Multiple accounts | Profiles, opened one at a time | Every profile gets its own **"Open profile: …"** entry in the tray, so you can run two or more accounts side by side |
+| Updates | From SpikeHD's releases | From **this fork's** releases, so updating never replaces this build with the official one |
+| Upstream changes | — | Pulled in daily, **only after a security review** (see [How updates are checked](#how-updates-are-checked)) |
 
-<h1>Bleeding Edge Builds</h1>
-<p>These builds are based on the latest GitHub Actions artifacts. They may not work properly, and they probably contain bugs. Use at your own risk!</p>
+**Curated Illegalcord** is Illegalcord with 22 plugins removed. They downloaded and ran unverified programs, broke
+Discord's rules in ways that commonly lead to bans, or spied on other users. The full list and the reasons
+are in the [Illegalcord fork's README](https://github.com/JannickDEV/Illegalcord#removed-plugins).
 
-<table align="center">
-  <tr>
-    <th>
-      <img src="docs/image/windows.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/apple.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/debian.png" width="23%" align="center" />
-    </th>
-    <th>
-      <img src="docs/image/fedora.png" width="23%" align="center" />
-    </th>
-  </tr>
+## Download
 
-  <tr>
-    <td width="23%">
-      <div align="center">
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-x86_64-pc-windows-msvc-msi.zip">x86_64</a>
-        <span>|</span>
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-aarch64-pc-windows-msvc-nsis.zip">ARM</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-x86_64-apple-darwin-dmg.zip">x86_64</a>
-        <span>|</span>
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-aarch64-apple-darwin-dmg.zip">ARM</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-x86_64-unknown-linux-gnu-deb.zip">x86_64</a>
-        <span>|</span>
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-aarch64-unknown-linux-gnu-deb.zip">ARM64</a>
-      </div>
-    </td>
-    <td width="23%">
-      <div align="center">
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-x86_64-unknown-linux-gnu-rpm.zip">x86_64</a>
-        <span>|</span>
-        <a href="https://nightly.link/SpikeHD/Dorion/workflows/build/main/dorion-aarch64-unknown-linux-gnu-rpm.zip">ARM64</a>
-      </div>
-    </td>
-  </tr>
-</table>
+Get the latest version from **[Releases](https://github.com/JannickDEV/Dorion/releases/latest)**:
 
-</details>
+| System | File |
+|---|---|
+| Windows (most PCs) | `Dorion_<version>_x64-setup.exe` (installer) or `Dorion_<version>_x64_en-US.msi` |
+| Windows on ARM | `Dorion_<version>.arm64-setup.exe` |
+| Windows, no install | `Dorion_<version>_win64_portable.zip` |
+| macOS (Apple silicon / Intel) | `Dorion_<version>_aarch64.dmg` / `Dorion_<version>_x64.dmg` (when GitHub had macOS build capacity) |
+| Linux | `.deb`, `.rpm`, `.flatpak` or `_amd64_portable.tar.gz` |
 
-> [!TIP]
-> Dorion can also be used portably or installed via [several package managers](#package-repositories).
-> You can find portable builds in the [releases](https://github.com/SpikeHD/dorion/releases/latest/) page. You can also [build](#building) Dorion yourself!
+Only download from this repository's Releases page. Every file there was built by GitHub Actions from the
+public source in this repository. If someone sends you a "Dorion" or "Illegalcord" file directly, don't run it.
 
 > [!NOTE]
-> ***MacOS Users***: If opening Dorion gives you "Dorion.app cannot be opened because it is from an unidentified developer", you may just need to run `sudo xattr -rd com.apple.quarantine /Applications/Dorion.app`. Alternatively, you can open the **Privacy & Security** settings pane and scroll down to the **Security** section to remove the quarantine.
->
-> ***Windows Users***: Defender may think Dorion is a virus. This just happens sometimes, and if SmartScreen blocks it from running, click "More Info" and "Run Anyways". Feel free to scan Dorion with [Virustotal](https://www.virustotal.com/gui/home/upload)!
+> These builds aren't code-signed. Windows SmartScreen may say *"Windows protected your PC"*. Click
+> **More info → Run anyway** if the file came from the Releases page above. macOS may require
+> right-click → **Open** the first time.
 
-# Table of Contents
+## Setup
 
-* [Package Repositories](#package-repositories)
-* [Features](#features)
-  * [Plugins](#plugins)
-  * [Themes](#themes)
-* [Platform Support](#platform-support)
-* [Building](#building)
-  * [Prerequisites](#prerequisites)
-  * [Steps](#steps)
-  * [Shared CEF](#shared-cef)
-* [Known Issues](#known-issues)
-* [Troubleshooting](#troubleshooting)
-  * [Things you Might be Asked to Provide](#things-you-might-be-asked-to-provide)
-  * [General](#general)
-  * [Windows](#windows)
-  * [Linux](#linux)
-* [TODO](#todo)
-* [Using Plugins, Extensions, and Themes](#using-plugins-extensions-and-themes)
-* [Contributing](#contributing)
-  * [Translating](#translating)
-  * [Contributors](#contributors)
-* [Screenshots](#screenshots)
+1. **Install and sign in** as you would with the normal Discord app.
+2. **Turn on Illegalcord:** open Discord settings, scroll to the **Dorion** section, then **Client Mods**. Enable
+   **Illegalcord**, and make sure **Vencord** and **Equicord** are off; they conflict with each other. Shelter stays on.
+   Restart Dorion, and Illegalcord's settings appear in the settings sidebar.
+3. **Turn on auto update** in Dorion's settings. On Windows and macOS this installs new versions of this build
+   automatically. On Linux you're notified, and you install the new package from Releases.
+4. **Choose your plugins** in the Illegalcord settings. A few are on by default, such as DiscordHardened, StreamProof,
+   the tutorial and announcements, and a few cosmetic ones. Everything else is opt-in. Turn on only what you need.
 
-# Package Repositories
+### Two accounts at once
 
-I do **not** maintain any instances of Dorion in any package repositories myself, however some very kind people maintain some in their own spare time:
+1. In Dorion's settings, under **Profiles**, create a profile, for example `second`.
+2. Turn on **multi-instance** and restart Dorion.
+3. Right-click the Dorion tray icon and choose **Open profile: second**, then sign in with your other account.
 
-* Windows:
-  * Shovel/Scoop (Maintained by [Small-Ku](https://github.com/Small-Ku/)):
-    ```sh
-    scoop bucket add turbo https://github.com/Small-Ku/turbo-bucket.git
-    scoop install turbo/dorion
-    ```
-  * WinGet (Maintained by [headquarter8302](https://github.com/headquarter8302))
-    ```sh
-    winget install --id SpikeHD.Dorion
-    ```
-* Linux:
-  * Arch AUR (Maintained by [YouKnow-sys](https://github.com/YouKnow-sys))
-    ```sh
-    yay -S dorion-bin
-    ```
-  * NixOS
-    ```sh
-    nix-shell -p dorion
-    ```
-* MacOS:
-  * Homebrew (Maintained by [psharma04](https://github.com/psharma04))
-    ```sh
-    brew tap psharma04/dorion
-    brew install --cask dorion
-    ```
+Each profile has its own login, cache and plugin settings. You can also start a profile directly, for example from a
+desktop shortcut: `Dorion.exe --profile second` (Windows) or `dorion --profile second` (Linux).
 
-> [!NOTE]
-> Maintaining Dorion in a different package repository that I don't know about? Feel free to [open a PR](https://github.com/SpikeHD/Dorion/pulls) to add it here!
+If a menu entry has a slightly different name in your version, edit `config.json` directly while Dorion is
+closed. It's in `%APPDATA%\dorion\` on Windows and `~/.config/dorion/` on Linux:
 
-# Features
-
-* [Significantly smaller](https://github.com/SpikeHD/Dorion/assets/25207995/eb603f1f-f633-4913-a25e-1316b495a08a) than the original Discord client and other web-based alternatives
-* Theme support
-* Global push-to-talk and custom keybinds
-* [Shelter](https://github.com/uwu/Shelter) and (optionally) [Vencord](https://github.com/vendicated/vencord)/[Equicord](https://github.com/equicord/equicord) included out of the box
-* Full [RPC/game presence](https://github.com/SpikeHD/rsRPC) support included out of the box.
-  * This also requires either the [shelteRPC](https://github.com/SpikeHD/shelter-plugins?tab=readme-ov-file#shelterpc) or [arRPC](https://vencord.dev/plugins/WebRichPresence%20(arRPC)) plugins to be enabled
-* (Hopefully) better low-end system performance, YMMV
-* ARM support for all platforms
-* Feature flags for those who build from source
-
-## Plugins
-
-Dorion comes with [shelter](https://github.com/uwu/shelter), so that should cover at least some plugin-related needs. You can also enable client mods like [Vencord](https://github.com/vendicated/vencord) inside the Dorion settings page.
-If you want to install plugins not available within the Dorion settings page, ensure you are downloading a browser-compatible version.
-
-> [!NOTE]
-> Want official support for another client mod? As long as it works on the web, feel free to submit a [feature request](https://github.com/SpikeHD/Dorion/issues/new/choose)!
-
-> [!TIP]
-> Unsure what shelter plugins exist out there? There's more than you think! Try searching `shelter plugins` on GitHub, or use the Plugin Browser plugin:
->
-> `https://spikehd.github.io/shelter-plugins/plugin-browser/`
-
-## Themes
-
-Dorion supports all themes, BetterDiscord and others, with a [couple caveats](#known-issues).
-
-[Jump to "Using Plugins and Themes"](#using-plugins-and-themes)
-
-# Platform Support
-
-<div width="100%" align="center">
-
-| Feature                                        | Windows 10/11 | Windows 7[^1] | Linux            | MacOS           |
-|------------------------------------------------|---------------|---------------|------------------|-----------------|
-| Basics (logging in, navigation, text/DMs etc.) | ✓             | ~             | ✓                | ✓               |
-| Voice                                          | ✓             | ~             | ✓                | ✓               |
-| Themes                                         | ✓             | ~             | ✓                | ✓               |
-| Shelter                                        | ✓             | ~             | ✓                | ✓               |
-| Dorion Plugins                                 | ✓             | ~             | ✓                | ✓               |
-
-</div>
-
-[^1]: Windows 7 support is possible by installing API extensions, such as VxKex. It could break at any point, and if this happens, I probably won't put much effort into fixing it (PRs always welcome of course!). You may also need to manually install [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) if Dorion doesn't open after installing!
-
-# Building
-
-## Prerequisites
-
-* [NodeJS](https://nodejs.org)
-* [PNPM](https://pnpm.io/)
-* [Rust and Cargo](https://www.rust-lang.org/tools/install)
-* [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/)
-
-## Steps
-
-1. Clone/download the repository
-2. Open a terminal window in the root project folder
-3. Install JS dependencies:
-
-    ```sh
-    pnpm install
-    ```
-
-4. Pull the latest shelter build (this is used as a backup if it cannot be fetched on the fly)
-
-    ```sh
-    pnpm shupdate
-    ```
-
-5. Build the updater
-
-    ```sh
-    pnpm build:updater
-    ```
-
-6. Build!
-
-    ```sh
-    # Build Dorion...
-    pnpm tauri build
-
-    # ...or to debug/open in dev mode
-    pnpm dev
-    ```
-
-All built files will be in `src-tauri/target/(release|debug)/`. Installation files (eg. `.msi`, `.deb`) are located in `bundle/`.
-
-## Shared CEF
-
-Dorion can link against a system-installed CEF instead of bundling it. Relevant env vars:
-
-* `DORION_SHARED_CEF=1` skips `scripts/bundle-cef.sh`
-* `NIX_CEF_BINARY=1` (NixOS) has `cef-dll-sys` link against the CEF from the Nix environment
-* `FLATPAK=1` points `cef-dll-sys` at `/usr/lib`, matching the CEF runtime extension in the Flatpak manifest
-
-The runtime has to resolve `libcef.so` from the system install, e.g. with an rpath:
-
-```sh
-# Fedora
-RUSTFLAGS="-C link-arg=-Wl,-rpath,/usr/lib64/cef"
+```json
+"client_mods": ["Shelter", "Illegalcord"],
+"multi_instance": true
 ```
 
-CEF finds its resources (locales, paks) next to `libcef.so`, so nothing else is needed!
+## Safety and risks
 
-The system CEF must, however, be **at least** the version Dorion's `cef-dll-sys` is pinned at. CEF >= 152 uses API versioning but
-older CEF requires an exact version match.
+**What was checked.** Before building this, Illegalcord was reviewed line by line where it mattered: every
+use of the Discord token, every network request, every place that starts another program, all native
+(system-level) code, and the shipped binaries. No malware, token stealing or hidden data upload was found
+in Illegalcord's own code. The risky parts were plugins that download and run other people's programs, and
+plugins whose purpose breaks Discord's rules. Those were removed.
 
-## Flatpak
+**What you should still know:**
+- **Ban risk.** Some remaining plugins still change how Discord behaves, for example SilentDelete, SilentEdit,
+  SilentGroupCall, FollowUser, GhostClient and IllegalMessageLogger. They're popular and low-risk, but any client mod
+  is against Discord's rules.
+- **Other people's privacy.** Message-logger plugins keep messages that others deleted. Be decent about it.
+- **Network contacts.** When Discord starts, Illegalcord downloads badge lists from GitHub and `api.nightcord.st`,
+  as Equicord and Vencord do with their own badge services. Those hosts see your IP address and nothing else.
+  Plugins you turn on may contact the service they're built for (for example lyrics, translations or encrypted uploads).
+- **Desktop-only plugins.** Dorion loads Illegalcord's browser build, so plugins that need native code
+  (CustomDNS, SecureZipper, RamOptimizer, ClientIcon and others) are switched off or do nothing here.
 
-The flatpak wraps the linux `.deb`, so build that first and move it into the `flatpak/` dir before building the rest:
+### How updates are checked
 
-```sh
-git submodule update --init
-mkdir -p flatpak/build
-cp src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb flatpak/build/dorion-x86_64.deb
+Once a day, an automated Claude session (AI-assisted, run on my account) does the following:
+1. Fetches new changes from official Dorion and from Illegalcord.
+2. Runs [`scripts/forkSafetyCheck.mjs`](scripts/forkSafetyCheck.mjs). It flags new or changed binaries, token
+   access, starting other programs, remote scripts, new network destinations, new dependencies, and changes to
+   privileged code.
+3. Reads every flagged change and every new plugin, and merges only if nothing unsafe was found. New
+   rule-breaking plugins are removed before merging.
 
-flatpak-builder --force-clean --ccache --repo=flatpak/repo flatpak/out flatpak/com.spikehd.dorion.yml
-```
+If anything is unclear, nothing gets merged and I get a notification to look at it myself. This is a strong filter,
+but no review is a guarantee.
 
-Then install the built flatpak and run it:
+## Reporting problems
 
-```sh
-flatpak --user install -y ./flatpak/repo com.spikehd.dorion
-flatpak --user run com.spikehd.dorion
-```
+Open an issue in this repository, or message me (JannickDEV) directly. For security problems such as a suspicious file or
+behaviour that looks like data being sent somewhere, **don't post details publicly**. Message me privately
+first. Never send anyone your Discord token or password, and nobody legitimate will ask for them.
 
-# Known Issues
+For general Dorion questions (installation problems, the "Oops! Something went wrong" screen, Linux and
+Flatpak details, building it yourself), see the **[official Dorion README](https://github.com/SpikeHD/Dorion#readme)**.
+It applies to this build too.
 
-* (non-Windows) External images (UserBG, Decor, UserPFP, etc.) will not load
-* (non-Windows) Fonts/font-faces will not load
-* Everything else in [the issues page](https://github.com/SpikeHD/Dorion/issues)
+## For developers
 
-# Troubleshooting
+Changes compared with upstream are listed in [FORK_NOTES.md](FORK_NOTES.md). Building works exactly as described in the
+[official instructions](https://github.com/SpikeHD/Dorion#building). The client mod entry for Illegalcord is in
+`src-tauri/src/injection/client_mod.rs`.
 
-## Things you Might be Asked to Provide
+## Credits and license
 
-If you submit an issue or ask a question in the Discord, it's likely you will be asked for the following, so please provide them if you can:
+- **[Dorion](https://github.com/SpikeHD/Dorion)** by SpikeHD and contributors: the entire client. This repository only adds a few small changes.
+- **[Illegalcord](https://github.com/ImHisako/Illegalcord)** by ImHisako and contributors, based on
+  **[Equicord](https://github.com/Equicord/Equicord)** and **[Vencord](https://github.com/Vendicated/Vencord)**.
+- **[Shelter](https://github.com/uwu/shelter)**, which Dorion uses for its own settings and plugins.
 
-* Devtools console output (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> <kbd>i</kbd>, then click "Console")
-* `latest.log` output
-  * Windows: `%appdata%\dorion\logs`
-  * Linux: `~/.config/dorion/logs`
-  * MacOS: `~/Library/Application Support/dorion/logs`
+Dorion is licensed under the [GNU GPL v3](LICENSE), and so is this build. The full source of every build is
+in this repository.
 
-## General
-
-### I can't see Dorion Settings!
-* Check if `https://raw.githubusercontent.com/` URLs are being blocked by any system-wide adblockers/firewalls
-* Check the devtools console to see if there are any relevant errors
-
-### "Oops! Something went wrong."
-(or a similar client crash)
-* Disable non-vital client mods/plugins/extensions and try again.
-* If you cannot get to the settings menu, you can delete the following items:
-  * Windows: `%appdata%\dorion\webdata` & `%appdata%\dorion\config.json`
-  * Linux: `~/.config/dorion/webdata` & `~/.config/dorion/config.json`
-  * MacOS: `~/Library/Application Support/dorion/webdata` & `~/Library/Application Support/dorion/config.json`
-
-## Windows
-### Dorion not opening
-* Try installing via MSI instead of the `.zip` file
-* Try using the `.zip` file instead of the MSI
-* (If using the `.zip` file) make sure all files were extracted properly. Ensure you are extracting Dorion and it's contents into it's own folder.
-* [Reinstall WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
-  * Fully uninstall and reinstall.
-  * If you are having trouble uninstalling it, or the installer says its already installed even though you uninstalled, try deleting this registry folder and uninstalling again `Computer\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}`
-
-# Using Plugins, Extensions, and Themes
-
-Plugins, extensions, and themes are relatively simple to use, the file structure looks like so on Windows:
-
-```
-C:/Users/%USERNAME%/dorion/
-    ├── plugins/
-    |   └── plugin.js
-    ├── extensions/
-    |   └── some_unpacked_extension/
-    └── themes/
-        └── theme.css
-```
-
-and like so on Linux:
-
-```
-~/.config/dorion/
-    ├── plugins/
-    |   └── plugin.js
-    └── themes/
-        └── theme.css
-```
-
-so if you download a plugin, extension, or theme, just pop it into the `plugins`/`extensions`/`themes` folder. If you need help finding them, there are buttons in Dorion settings that'll take you where you need!
-
-> [!NOTE]
-> Themes can also be installed by clicking `Install Theme from Link` in Theme settings, if you prefer
-
-# Contributing
-
-Issues, PRs, etc. are all welcome! For guidelines and tips, see [CONTRIBUTING.md](https://github.com/SpikeHD/Dorion/blob/main/CONTRIBUTING.md)
-
-## Translating
-
-See [TRANSLATING.md](./TRANSLATING.md)
-
-## Contributors
-
-<a href="https://github.com/spikehd/dorion/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=spikehd/dorion" />
-</a>
-
-# Screenshots
-
-## Full Installed Size Comparison (Windows)
-<img width="100%" src="https://github.com/SpikeHD/Dorion/assets/25207995/eb603f1f-f633-4913-a25e-1316b495a08a" />
-
-## Some Performance Settings
-<img width="100%" src="https://github.com/user-attachments/assets/a3364e03-7de2-4293-8cd7-cf655e99546f" />
-
-Theme: [OldCord](https://betterdiscord.app/theme/OldCord)
-
-<img width="100%" src="https://github.com/SpikeHD/Dorion/assets/25207995/c73a2333-31fb-404a-9489-5e1b1f8cfa54" />
-
-Theme: [Fluent](https://betterdiscord.app/theme/Fluent)
+Not affiliated with or endorsed by Discord Inc.
