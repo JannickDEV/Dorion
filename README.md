@@ -46,11 +46,14 @@ Get the latest version from **[Releases](https://github.com/JannickDEV/Dorion/re
 | Windows (most PCs) | `Dorion_<version>_x64-setup.exe` (installer) or `Dorion_<version>_x64_en-US.msi` |
 | Windows on ARM | `Dorion_<version>.arm64-setup.exe` |
 | Windows, no install | `Dorion_<version>_win64_portable.zip` |
-| macOS (Apple silicon / Intel) | `Dorion_<version>_aarch64.dmg` / `Dorion_<version>_x64.dmg` (when GitHub had macOS build capacity) |
+| macOS (Apple silicon / Intel) | `Dorion_<version>_aarch64.dmg` / `Dorion_<version>_x64.dmg` (sometimes added a little later, see below) |
 | Linux | `.deb`, `.rpm`, `.flatpak` or `_amd64_portable.tar.gz` |
 
 Only download from this repository's Releases page. Every file there was built by GitHub Actions from the
 public source in this repository. If someone sends you a "Dorion" or "Illegalcord" file directly, don't run it.
+
+GitHub's macOS build machines are sometimes unavailable. When that happens, the release goes out for Windows and
+Linux first, and the macOS files are added to the same release automatically once a retry succeeds.
 
 > [!NOTE]
 > These builds aren't code-signed. Windows SmartScreen may say *"Windows protected your PC"*. Click

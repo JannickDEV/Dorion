@@ -2,8 +2,12 @@ name: Fork release
 
 # Publishes this fork's own builds as GitHub releases, so Dorion's updater
 # (pointed at JannickDEV/Dorion) installs this build instead of SpikeHD's.
-# A release is only created when the version in tauri.conf.json changes,
-# which is how the updater decides whether an update exists.
+#
+# - A release is created when the version in tauri.conf.json has no release yet,
+#   as soon as the Windows and Linux installers built successfully, even if macOS failed.
+# - Files missing from an existing release (typically the macOS .dmg after
+#   "Retry macOS build" succeeded) are added, but only from a build of the same
+#   commit the release was made from, so one release never mixes different code.
 
 on:
   workflow_run:
@@ -25,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.conclusion != 'skipped' &&
        github.event.workflow_run.event != 'pull_request' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
     env:
@@ -39,10 +43,12 @@ jobs:
             run_id="${{ github.event.workflow_run.id }}"
             sha="${{ github.event.workflow_run.head_sha }}"
           else
-            read -r run_id sha < <(gh run list -w build.yml -b main --status success -L 1 \
-              --json databaseId,headSha --jq '.[0] | "\(.databaseId) \(.headSha)"')
+            read -r run_id sha < <(gh run list -w build.yml -b main --status completed -L 20 \
+              --json databaseId,headSha,conclusion \
+              --jq '[.[] | select(.conclusion == "success" or .conclusion == "failure")][0] | "\(.databaseId) \(.headSha)"')
           fi
-          [ -n "$run_id" ] || { echo "No successful Build run on main"; exit 1; }
+          [ -n "$run_id" ] && [ "$run_id" != "null" ] || { echo "No completed Build run on main"; exit 1; }
+          echo "Using Build run $run_id ($sha)"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
@@ -51,27 +57,37 @@ jobs:
         with:
           ref: ${{ steps.run.outputs.sha }}
 
-      - name: Read version
+      - name: Read version and existing release
         id: version
+        env:
+          SHA: ${{ steps.run.outputs.sha }}
         run: |
           version=$(jq -r .version src-tauri/tauri.conf.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
           if gh release view "v$version" >/dev/null 2>&1; then
-            echo "Release v$version already exists; nothing to do."
-            echo "exists=true" >> "$GITHUB_OUTPUT"
+            target=$(gh release view "v$version" --json targetCommitish --jq .targetCommitish)
+            if [ "$target" != "$SHA" ]; then
+              echo "v$version was released from $target, not $SHA; leaving it unchanged."
+              echo "mode=skip" >> "$GITHUB_OUTPUT"
+            else
+              echo "mode=add" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "mode=create" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Download build artifacts
-        if: steps.version.outputs.exists != 'true'
-        run: gh run download "${{ steps.run.outputs.run_id }}" -D artifacts
+        if: steps.version.outputs.mode != 'skip'
+        run: gh run download "${{ steps.run.outputs.run_id }}" -D artifacts || true
 
       - name: Rename artifacts
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.mode != 'skip'
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           mkdir -p renamed
           for dir in artifacts/*/; do
+            [ -d "$dir" ] || continue
             case "$(basename "$dir")" in
               dorion-aarch64-apple-darwin-dmg) name="Dorion_${VERSION}_aarch64.dmg" ;;
               dorion-x86_64-apple-darwin-dmg) name="Dorion_${VERSION}_x64.dmg" ;;
@@ -93,16 +109,50 @@ jobs:
             [ -n "$file" ] && cp "$file" "renamed/$name"
           done
           ls -la renamed
-          [ -n "$(ls -A renamed)" ] || { echo "No artifacts to release"; exit 1; }
 
       - name: Create release
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.mode == 'create'
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA: ${{ steps.run.outputs.sha }}
         run: |
+          # The Windows installers (the updater uses the .msi) and the Linux .deb must exist
+          for required in "Dorion_${VERSION}_x64_en-US.msi" "Dorion_${VERSION}_x64-setup.exe" "Dorion_${VERSION}_amd64.deb"; do
+            if [ ! -f "renamed/$required" ]; then
+              echo "::notice::Not releasing v$VERSION yet: $required was not built."
+              exit 0
+            fi
+          done
+          notes="Built by GitHub Actions from $SHA. Includes the Illegalcord client mod and per-profile tray launchers."
+          if ! ls renamed/*.dmg >/dev/null 2>&1; then
+            notes="$notes
+
+          macOS files are missing because GitHub had no macOS build capacity. They're added here automatically once a retry succeeds."
+          fi
           gh release create "v$VERSION" renamed/* \
             --target "$SHA" \
             --title "v$VERSION (JannickDEV fork)" \
-            --notes "Built by GitHub Actions from $SHA. Includes the Illegalcord client mod and per-profile tray launchers." \
+            --notes "$notes" \
             --latest
+
+      - name: Add missing files to existing release
+        if: steps.version.outputs.mode == 'add'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          existing=$(gh release view "v$VERSION" --json assets --jq '.assets[].name')
+          added=0
+          for file in renamed/*; do
+            [ -f "$file" ] || continue
+            name=$(basename "$file")
+            if ! grep -qxF "$name" <<< "$existing"; then
+              echo "Adding $name to v$VERSION"
+              gh release upload "v$VERSION" "$file"
+              added=$((added + 1))
+            fi
+          done
+          echo "Added $added file(s)."
+          if [ "$added" -gt 0 ] && ls renamed/*.dmg >/dev/null 2>&1; then
+            body=$(gh release view "v$VERSION" --json body --jq .body | sed '/macOS files are missing/d')
+            gh release edit "v$VERSION" --notes "$body"
+          fi

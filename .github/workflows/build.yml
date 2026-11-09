@@ -146,6 +146,8 @@ jobs:
   # Package jobs
   bundle-linux-deb:
     needs: build
+    # JannickDEV fork: package even if another platform (usually macOS) failed
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -184,6 +186,8 @@ jobs:
 
   bundle-linux-rpm:
     needs: build
+    # JannickDEV fork: package even if another platform (usually macOS) failed
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -229,6 +233,8 @@ jobs:
 
   bundle-windows:
     needs: build
+    # JannickDEV fork: package even if another platform (usually macOS) failed
+    if: ${{ !cancelled() }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -299,6 +305,8 @@ jobs:
   flatpak:
     # Flatpak just needs the deb to extract
     needs: bundle-linux-deb
+    # JannickDEV fork: package even if another platform (usually macOS) failed
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51

@@ -9,9 +9,15 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
 - **Profile-aware cache clearing** (`cache.rs`): respects `--profile`.
 - **Updates come from this fork** (`updater/src/main.rs`, `src-tauri/src/release.rs`): the updater and the
   update check use `JannickDEV/Dorion` releases.
-- **Fork release workflow** (`.github/workflows/fork-release.yml`): after a successful Build on `main`, it publishes
-  `v<version>` from that build, but only if the version has no release yet. Run it by hand from
-  the Actions tab to publish the current version.
+- **Fork release workflow** (`.github/workflows/fork-release.yml`): after each Build on `main`, it publishes
+  `v<version>` when that version has no release yet. Run it by hand from the Actions tab to publish
+  from the latest completed Build.
+- **Releases don't wait for macOS** (`.github/workflows/build.yml`): Windows, Linux and Flatpak packaging run even
+  when a macOS build failed, which is usually GitHub having no macOS runner available. `fork-release.yml` publishes once the
+  Windows installers and Linux `.deb` exist, and later adds missing files (the `.dmg`s) from a build of the same commit.
+- **macOS auto-retry** (`.github/workflows/retry-macos.yml`): if a Build on `main` failed only in macOS jobs, the failed
+  jobs are re-run after 5, 15 and 30 minutes, up to 3 retries. It doesn't retry when another platform failed or when a newer
+  commit has been built since.
 - **Safety check** (`scripts/forkSafetyCheck.mjs`, `.github/fork-safety.json`): the scanner the daily sync
   runs on upstream changes before merging.
 - **README.md**: rewritten for people who use this build (download, setup, risks, credits). For general

@@ -12,7 +12,9 @@
         "src-tauri/src/profiles.rs",
         "src-tauri/src/release.rs",
         "updater/src/main.rs",
-        ".github/workflows/fork-release.yml"
+        ".github/workflows/fork-release.yml",
+        ".github/workflows/build.yml",
+        ".github/workflows/retry-macos.yml"
     ],
     "sensitivePaths": [
         "src-tauri/src/**",
