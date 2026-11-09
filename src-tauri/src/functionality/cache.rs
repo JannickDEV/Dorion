@@ -6,7 +6,8 @@ pub fn clear_cache() {
   use std::fs;
 
   let profiles_dir = profiles_dir();
-  let profile = get_config().profile.unwrap_or("default".to_string());
+  // Respect --profile so a second instance clears its own cache, not the default profile's
+  let profile = crate::profiles::current_profile();
 
   // Paths from profiles will be webdata/EBWebView/Default/[Cache|Code Cache]
   let main_cache = profiles_dir

@@ -27,6 +27,13 @@ pub static CLIENT_MODS: phf::Map<&'static str, ClientMod> = phf_map! {
     script: "https://github.com/Equicord/Equicord/releases/download/latest/browser.js",
     styles: "https://github.com/Equicord/Equicord/releases/download/latest/browser.css",
   },
+  // Curated Illegalcord build (unsafe plugins removed), published by the
+  // JannickDEV/Illegalcord fork's "Release" workflow. Like Vencord and Equicord,
+  // enable only one of these three at a time.
+  "Illegalcord" => ClientMod {
+    script: "https://github.com/JannickDEV/Illegalcord/releases/download/latest/browser.js",
+    styles: "https://github.com/JannickDEV/Illegalcord/releases/download/latest/browser.css",
+  },
 };
 
 #[tauri::command]

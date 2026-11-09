@@ -127,6 +127,24 @@ pub fn set_tray_icon(app: AppHandle<crate::Runtime>, event: String) {
   }
 }
 
+const OPEN_PROFILE_PREFIX: &str = "open_profile:";
+
+fn spawn_instance(profile: &str) {
+  crate::util::helpers::mark_fds_cloexec();
+
+  let exe = match std::env::current_exe() {
+    Ok(exe) => exe,
+    Err(e) => {
+      log!("Error finding Dorion executable: {:?}", e);
+      return;
+    }
+  };
+
+  if let Err(e) = Command::new(exe).arg("--profile").arg(profile).spawn() {
+    log!("Error spawning new window: {:?}", e);
+  }
+}
+
 pub fn create_tray(app: &AppHandle<crate::Runtime>) -> Result<(), tauri::Error> {
   let open_item = MenuItemBuilder::with_id("open", "Open").build(app)?;
   let reload_item = MenuItemBuilder::with_id("reload", "Reload").build(app)?;
@@ -144,6 +162,21 @@ pub fn create_tray(app: &AppHandle<crate::Runtime>) -> Result<(), tauri::Error> 
       &quit_item,
       &new_window_item,
     ]);
+
+    // One entry per other profile, so a second account can run side by side
+    let current = crate::profiles::current_profile();
+    for profile in crate::profiles::get_profile_list() {
+      if profile == current {
+        continue;
+      }
+
+      let item = MenuItemBuilder::with_id(
+        format!("{OPEN_PROFILE_PREFIX}{profile}"),
+        format!("Open profile: {profile}"),
+      )
+      .build(app)?;
+      menu = menu.item(&item);
+    }
   } else {
     menu = menu.items(&[&open_item, &reload_item, &restart_item, &quit_item]);
   }
@@ -180,16 +213,14 @@ pub fn create_tray(app: &AppHandle<crate::Runtime>) -> Result<(), tauri::Error> 
         window.eval("window.location.reload();").unwrap_or_default();
       }
       "new_window" => {
-        // Literally just launch another instance of the app
-        crate::util::helpers::mark_fds_cloexec();
-        match Command::new(std::env::current_exe().unwrap()).spawn() {
-          Ok(_) => {}
-          Err(e) => {
-            log!("Error spawning new window: {:?}", e);
-          }
+        // Launch another instance of the app on the same profile as this one
+        spawn_instance(&crate::profiles::current_profile());
+      }
+      id => {
+        if let Some(profile) = id.strip_prefix(OPEN_PROFILE_PREFIX) {
+          spawn_instance(profile);
         }
       }
-      _ => {}
     })
     .on_tray_icon_event(|tray, event| {
       if let TrayIconEvent::Click {

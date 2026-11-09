@@ -6,6 +6,12 @@ use crate::{
   util::paths::profiles_dir,
 };
 
+/// The profile this process is running with: `--profile` takes precedence over the config.
+pub fn current_profile() -> String {
+  crate::args::get_profile()
+    .unwrap_or_else(|| get_config().profile.unwrap_or("default".to_string()))
+}
+
 pub fn init_profiles_folders() {
   // Create %appdata%/dorion/profiles/default
   let default_profile_folder = profiles_dir().join("default");
