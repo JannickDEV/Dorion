@@ -1,0 +1,108 @@
+name: Fork release
+
+# Publishes this fork's own builds as GitHub releases, so Dorion's updater
+# (pointed at JannickDEV/Dorion) installs this build instead of SpikeHD's.
+# A release is only created when the version in tauri.conf.json changes,
+# which is how the updater decides whether an update exists.
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: fork-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event != 'pull_request' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Find the build to release
+        id: run
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            run_id="${{ github.event.workflow_run.id }}"
+            sha="${{ github.event.workflow_run.head_sha }}"
+          else
+            read -r run_id sha < <(gh run list -w build.yml -b main --status success -L 1 \
+              --json databaseId,headSha --jq '.[0] | "\(.databaseId) \(.headSha)"')
+          fi
+          [ -n "$run_id" ] || { echo "No successful Build run on main"; exit 1; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout built commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.run.outputs.sha }}
+
+      - name: Read version
+        id: version
+        run: |
+          version=$(jq -r .version src-tauri/tauri.conf.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "Release v$version already exists; nothing to do."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download build artifacts
+        if: steps.version.outputs.exists != 'true'
+        run: gh run download "${{ steps.run.outputs.run_id }}" -D artifacts
+
+      - name: Rename artifacts
+        if: steps.version.outputs.exists != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p renamed
+          for dir in artifacts/*/; do
+            case "$(basename "$dir")" in
+              dorion-aarch64-apple-darwin-dmg) name="Dorion_${VERSION}_aarch64.dmg" ;;
+              dorion-x86_64-apple-darwin-dmg) name="Dorion_${VERSION}_x64.dmg" ;;
+              dorion-aarch64-pc-windows-msvc-nsis) name="Dorion_${VERSION}.arm64-setup.exe" ;;
+              dorion-aarch64-pc-windows-msvc-portable) name="Dorion_${VERSION}_win_arm64_portable.zip" ;;
+              dorion-x86_64-pc-windows-msvc-nsis) name="Dorion_${VERSION}_x64-setup.exe" ;;
+              dorion-x86_64-pc-windows-msvc-msi) name="Dorion_${VERSION}_x64_en-US.msi" ;;
+              dorion-x86_64-pc-windows-msvc-portable) name="Dorion_${VERSION}_win64_portable.zip" ;;
+              dorion-aarch64-unknown-linux-gnu-deb) name="Dorion_${VERSION}_arm64.deb" ;;
+              dorion-aarch64-unknown-linux-gnu-portable) name="Dorion_${VERSION}_arm64_portable.tar.gz" ;;
+              dorion-aarch64-unknown-linux-gnu-rpm) name="Dorion_${VERSION}-1.aarch64.rpm" ;;
+              dorion-x86_64-unknown-linux-gnu-deb) name="Dorion_${VERSION}_amd64.deb" ;;
+              dorion-x86_64-unknown-linux-gnu-flatpak) name="Dorion_${VERSION}.flatpak" ;;
+              dorion-x86_64-unknown-linux-gnu-portable) name="Dorion_${VERSION}_amd64_portable.tar.gz" ;;
+              dorion-x86_64-unknown-linux-gnu-rpm) name="Dorion_${VERSION}-1.x86_64.rpm" ;;
+              *) continue ;;
+            esac
+            file=$(find "$dir" -type f -print -quit)
+            [ -n "$file" ] && cp "$file" "renamed/$name"
+          done
+          ls -la renamed
+          [ -n "$(ls -A renamed)" ] || { echo "No artifacts to release"; exit 1; }
+
+      - name: Create release
+        if: steps.version.outputs.exists != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SHA: ${{ steps.run.outputs.sha }}
+        run: |
+          gh release create "v$VERSION" renamed/* \
+            --target "$SHA" \
+            --title "v$VERSION (JannickDEV fork)" \
+            --notes "Built by GitHub Actions from $SHA. Includes the Illegalcord client mod and per-profile tray launchers." \
+            --latest

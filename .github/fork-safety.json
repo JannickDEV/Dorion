@@ -1,0 +1,53 @@
+{
+    "upstream": "https://github.com/SpikeHD/Dorion.git",
+    "removedPaths": [],
+    "forkOwnedFiles": [
+        "src-tauri/src/injection/client_mod.rs",
+        "src-tauri/src/functionality/tray.rs",
+        "src-tauri/src/functionality/cache.rs",
+        "src-tauri/src/profiles.rs",
+        "src-tauri/src/release.rs",
+        "updater/src/main.rs",
+        ".github/workflows/fork-release.yml"
+    ],
+    "sensitivePaths": [
+        "src-tauri/src/**",
+        "src-tauri/injection/**",
+        "src-tauri/build.rs",
+        "src-tauri/Cargo.toml",
+        "src-tauri/tauri.conf.json",
+        "src-tauri/capabilities/**",
+        "updater/**",
+        "scripts/**",
+        ".github/**",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "PKGBUILD",
+        "flatpak/**"
+    ],
+    "plugins": [],
+    "dependencyFiles": [
+        "package.json",
+        "src-tauri/Cargo.toml",
+        "updater/Cargo.toml"
+    ],
+    "allowedBinaryGlobs": [
+        "**/*.png",
+        "**/*.ico",
+        "**/*.icns",
+        "**/*.svg",
+        "**/*.jpg",
+        "**/*.gif",
+        "**/*.webp",
+        "**/*.woff2",
+        "**/*.ttf"
+    ],
+    "ignoreLineChecksIn": [
+        "pnpm-lock.yaml",
+        "**/Cargo.lock",
+        "**/*.md",
+        "docs/**",
+        "**/*.css"
+    ],
+    "trustedHosts": []
+}

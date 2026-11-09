@@ -6,6 +6,11 @@ use crate::github::{download_release, get_release};
 #[cfg(not(target_os = "linux"))]
 mod github;
 
+// Updates come from this fork's releases (published by .github/workflows/fork-release.yml),
+// not SpikeHD/Dorion, so an update never replaces this build with the official one.
+#[cfg(not(target_os = "linux"))]
+const REPO_OWNER: &str = "JannickDEV";
+
 // If you are reading this, you probably don't need to be. Dorion updates on it's own, silly!
 struct UpdaterArguments {
   main: bool,
@@ -108,7 +113,7 @@ pub fn reopen_as_elevated() {
  */
 #[cfg(target_os = "windows")]
 pub fn update_main() {
-  let release = match get_release("SpikeHD", "Dorion") {
+  let release = match get_release(REPO_OWNER, "Dorion") {
     Ok(release) => release,
     Err(e) => {
       println!("Failed to get release: {}", e);
@@ -133,7 +138,7 @@ pub fn update_main() {
   println!("Downloading {}...", release_name);
 
   let release_path = download_release(
-    "SpikeHD",
+    REPO_OWNER,
     "Dorion",
     release.tag_name.clone(),
     release_name.clone(),
@@ -178,7 +183,7 @@ pub fn update_main() {
 #[cfg(target_os = "windows")]
 pub fn update_main_kinda() {
   // Same as the MSI, but we just download the zip file instead and open explorer to highlight it
-  let release = match get_release("SpikeHD", "Dorion") {
+  let release = match get_release(REPO_OWNER, "Dorion") {
     Ok(release) => release,
     Err(e) => {
       println!("Failed to get release: {}", e);
@@ -203,7 +208,7 @@ pub fn update_main_kinda() {
   println!("Downloading {}...", release_name);
 
   let release_path = download_release(
-    "SpikeHD",
+    REPO_OWNER,
     "Dorion",
     release.tag_name.clone(),
     release_name.clone(),
@@ -248,7 +253,7 @@ pub fn update_main_kinda() {
  */
 #[cfg(target_os = "macos")]
 pub fn update_main() {
-  let release = match get_release("SpikeHD", "Dorion") {
+  let release = match get_release(REPO_OWNER, "Dorion") {
     Ok(release) => release,
     Err(e) => {
       println!("Failed to get release: {}", e);
@@ -279,7 +284,7 @@ pub fn update_main() {
   println!("Downloading {}...", release_name);
 
   let release_path = download_release(
-    "SpikeHD",
+    REPO_OWNER,
     "Dorion",
     release.tag_name.clone(),
     release_name.clone(),
