@@ -6,6 +6,8 @@ on:
 
 jobs:
   publish:
+    # JannickDEV fork: only SpikeHD/Dorion publishes the SpikeHD.Dorion winget package
+    if: github.repository == 'SpikeHD/Dorion'
     runs-on: windows-latest
     steps:
       - name: Extract version

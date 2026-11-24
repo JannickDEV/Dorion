@@ -16,7 +16,8 @@
         ".github/workflows/build.yml",
         ".github/workflows/retry-macos.yml",
         "docs/MULTIPLE_ACCOUNTS.md",
-        "src-tauri/src/main.rs"
+        "src-tauri/src/main.rs",
+        ".github/workflows/publish-winget.yml"
     ],
     "sensitivePaths": [
         "src-tauri/src/**",
