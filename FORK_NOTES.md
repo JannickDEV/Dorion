@@ -10,6 +10,10 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
 - **Separate macOS logins per profile** (`main.rs`, `profiles.rs`): WKWebView ignores `data_directory`, so non-default
   profiles get their own `data_store_identifier` (macOS 14+, ID derived from the profile name). The default profile keeps
   the standard store.
+- **Linux: profiles can run side by side** (`main.rs`, `tray.rs`): CEF locks its root cache folder, and every instance
+  shared one, so a second profile exited at once. Non-default profiles now use their own data folder
+  (`~/.cache/com.spikehd.dorion/cef/dorion-<profile>`) as CEF root, so logins stay where they were. Instances started from
+  the tray no longer inherit `DORION_CEF_ARG_REEXEC`, so they re-exec with `--no-sandbox` like a normal start.
 - **Multi-account guide** (`docs/MULTIPLE_ACCOUNTS.md`).
 - **Updates come from this fork** (`updater/src/main.rs`, `src-tauri/src/release.rs`): the updater and the
   update check use `JannickDEV/Dorion` releases.

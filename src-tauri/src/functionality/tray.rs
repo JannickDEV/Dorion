@@ -140,7 +140,14 @@ fn spawn_instance(profile: &str) {
     }
   };
 
-  if let Err(e) = Command::new(exe).arg("--profile").arg(profile).spawn() {
+  // On Linux this process set DORION_CEF_ARG_REEXEC for itself; the new instance must not inherit
+  // it, or it skips its own --no-sandbox re-exec.
+  if let Err(e) = Command::new(exe)
+    .arg("--profile")
+    .arg(profile)
+    .env_remove("DORION_CEF_ARG_REEXEC")
+    .spawn()
+  {
     log!("Error spawning new window: {:?}", e);
   }
 }

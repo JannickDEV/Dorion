@@ -273,9 +273,15 @@ fn main() {
       command_line_args.push(("remote-debugging-port".into(), Some(port)));
     }
 
+    // CEF locks its root cache folder (SingletonLock), so every running instance needs its own
+    // root. The default profile keeps the shared root; other profiles use their own data folder
+    // (already under that root) as the root, so they can run next to it and keep their logins.
+    let cache_path = (profiles::current_profile() != "default").then(get_cef_data_dir);
+
     tauri_runtime_cef::configure(tauri_runtime_cef::CefConfig {
       identifier: context.config().identifier.clone(),
       command_line_args,
+      cache_path,
       ..Default::default()
     });
 
