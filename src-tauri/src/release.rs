@@ -83,6 +83,15 @@ pub async fn maybe_latest_main_release(
     .as_str()
     .ok_or("Failed to extract 'tag_name' from JSON")?;
 
+  // This fork publishes a release per build commit (see .github/workflows/fork-release.yml), so
+  // compare the commit the latest release was built from with the one this build came from
+  if let (Some(built), Some(target)) = (option_env!("GIT_HASH"), json["target_commitish"].as_str())
+    && target.len() == 40
+    && target.chars().all(|c| c.is_ascii_hexdigit())
+  {
+    return Ok(!built.eq_ignore_ascii_case(target));
+  }
+
   let handle = win.app_handle();
   let app_version = &handle.package_info().version;
   let version_str = format!(

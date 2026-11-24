@@ -17,9 +17,11 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
 - **Multi-account guide** (`docs/MULTIPLE_ACCOUNTS.md`).
 - **Updates come from this fork** (`updater/src/main.rs`, `src-tauri/src/release.rs`): the updater and the
   update check use `JannickDEV/Dorion` releases.
-- **Fork release workflow** (`.github/workflows/fork-release.yml`): after each Build on `main`, it publishes
-  `v<version>` when that version has no release yet. Run it by hand from the Actions tab to publish
-  from the latest completed Build.
+- **Fork release workflow** (`.github/workflows/fork-release.yml`): after each Build on `main`, it publishes a
+  release of that commit: `v<version>` for the first build of a version, `v<version>-<short commit>` for later fork-only
+  changes. Don't create releases by hand; run this workflow from the Actions tab instead.
+- **Commit-based update check** (`src-tauri/src/release.rs`): an update is offered when the latest release was built
+  from a different commit than the running app (`GIT_HASH`), so fork-only fixes reach users without a version bump.
 - **Releases don't wait for macOS** (`.github/workflows/build.yml`): Windows, Linux and Flatpak packaging run even
   when a macOS build failed, which is usually GitHub having no macOS runner available. `fork-release.yml` publishes once the
   Windows installers and Linux `.deb` exist, and later adds missing files (the `.dmg`s) from a build of the same commit.

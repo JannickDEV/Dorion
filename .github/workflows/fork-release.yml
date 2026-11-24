@@ -3,8 +3,11 @@ name: Fork release
 # Publishes this fork's own builds as GitHub releases, so Dorion's updater
 # (pointed at JannickDEV/Dorion) installs this build instead of SpikeHD's.
 #
-# - A release is created when the version in tauri.conf.json has no release yet,
-#   as soon as the Windows and Linux installers built successfully, even if macOS failed.
+# - Every build commit on main gets its own release, as soon as the Windows and
+#   Linux installers built successfully, even if macOS failed. The tag is
+#   v<version> for the first build of a version and v<version>-<short commit>
+#   for later fork-only changes. The app's update check compares the release's
+#   commit with the commit it was built from (src-tauri/src/release.rs).
 # - Files missing from an existing release (typically the macOS .dmg after
 #   "Retry macOS build" succeeded) are added, but only from a build of the same
 #   commit the release was made from, so one release never mixes different code.
@@ -64,17 +67,24 @@ jobs:
         run: |
           version=$(jq -r .version src-tauri/tauri.conf.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          if gh release view "v$version" >/dev/null 2>&1; then
-            target=$(gh release view "v$version" --json targetCommitish --jq .targetCommitish)
-            if [ "$target" != "$SHA" ]; then
-              echo "v$version was released from $target, not $SHA; leaving it unchanged."
-              echo "mode=skip" >> "$GITHUB_OUTPUT"
-            else
-              echo "mode=add" >> "$GITHUB_OUTPUT"
+          # A release of this exact commit, under either tag form, gets missing files added
+          for tag in "v$version" "v$version-${SHA:0:7}"; do
+            if gh release view "$tag" >/dev/null 2>&1; then
+              target=$(gh release view "$tag" --json targetCommitish --jq .targetCommitish)
+              if [ "$target" = "$SHA" ]; then
+                echo "tag=$tag" >> "$GITHUB_OUTPUT"
+                echo "mode=add" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
             fi
+          done
+          # Otherwise create one: the plain version tag if still free, else a per-commit tag
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "tag=v$version-${SHA:0:7}" >> "$GITHUB_OUTPUT"
           else
-            echo "mode=create" >> "$GITHUB_OUTPUT"
+            echo "tag=v$version" >> "$GITHUB_OUTPUT"
           fi
+          echo "mode=create" >> "$GITHUB_OUTPUT"
 
       - name: Download build artifacts
         if: steps.version.outputs.mode != 'skip'
@@ -114,12 +124,13 @@ jobs:
         if: steps.version.outputs.mode == 'create'
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
           SHA: ${{ steps.run.outputs.sha }}
         run: |
           # The Windows installers (the updater uses the .msi) and the Linux .deb must exist
           for required in "Dorion_${VERSION}_x64_en-US.msi" "Dorion_${VERSION}_x64-setup.exe" "Dorion_${VERSION}_amd64.deb"; do
             if [ ! -f "renamed/$required" ]; then
-              echo "::notice::Not releasing v$VERSION yet: $required was not built."
+              echo "::notice::Not releasing $TAG yet: $required was not built."
               exit 0
             fi
           done
@@ -129,30 +140,30 @@ jobs:
 
           macOS files are missing because GitHub had no macOS build capacity. They're added here automatically once a retry succeeds."
           fi
-          gh release create "v$VERSION" renamed/* \
+          gh release create "$TAG" renamed/* \
             --target "$SHA" \
-            --title "v$VERSION (JannickDEV fork)" \
+            --title "$TAG (JannickDEV fork)" \
             --notes "$notes" \
             --latest
 
       - name: Add missing files to existing release
         if: steps.version.outputs.mode == 'add'
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          existing=$(gh release view "v$VERSION" --json assets --jq '.assets[].name')
+          existing=$(gh release view "$TAG" --json assets --jq '.assets[].name')
           added=0
           for file in renamed/*; do
             [ -f "$file" ] || continue
             name=$(basename "$file")
             if ! grep -qxF "$name" <<< "$existing"; then
-              echo "Adding $name to v$VERSION"
-              gh release upload "v$VERSION" "$file"
+              echo "Adding $name to $TAG"
+              gh release upload "$TAG" "$file"
               added=$((added + 1))
             fi
           done
           echo "Added $added file(s)."
           if [ "$added" -gt 0 ] && ls renamed/*.dmg >/dev/null 2>&1; then
-            body=$(gh release view "v$VERSION" --json body --jq .body | sed '/macOS files are missing/d')
-            gh release edit "v$VERSION" --notes "$body"
+            body=$(gh release view "$TAG" --json body --jq .body | sed '/macOS files are missing/d')
+            gh release edit "$TAG" --notes "$body"
           fi
