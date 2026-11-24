@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '.github/workflows/build.yml'
+      # Any workflow change: the fork's release job can only tag the commit at the tip of main
+      # when workflow files changed since (see fork-release.yml)
+      - '.github/workflows/**'
       - 'package.json'
       - 'src-tauri/**/*'
       - 'src/**/*'

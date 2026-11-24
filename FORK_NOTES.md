@@ -20,6 +20,8 @@ Tracks `SpikeHD/Dorion`. Changes compared to upstream:
 - **Fork release workflow** (`.github/workflows/fork-release.yml`): after each Build on `main`, it publishes a
   release of that commit: `v<version>` for the first build of a version, `v<version>-<short commit>` for later fork-only
   changes. Don't create releases by hand; run this workflow from the Actions tab instead.
+  A build is only released while its workflow files match `main` (the workflow token can't tag other commits), so
+  Build also runs on every workflow change.
 - **Commit-based update check** (`src-tauri/src/release.rs`): an update is offered when the latest release was built
   from a different commit than the running app (`GIT_HASH`), so fork-only fixes reach users without a version bump.
 - **Releases don't wait for macOS** (`.github/workflows/build.yml`): Windows, Linux and Flatpak packaging run even
